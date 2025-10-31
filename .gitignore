@@ -1,0 +1,24 @@
+# Python
+backend/__pycache__/
+*.py[cod]
+
+# Virtual environments
+backend/.venv/
+backend/env/
+backend/venv/
+
+# Node.js / Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.env.local
+frontend/.eslintcache
+
+# Logs & temp
+*.log
+*.tmp
+*.bak
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,59 @@
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: #f3f4f6;
+  display: flex;
+  justify-content: center;
+}
+
+.upload-form {
+  background: white;
+  padding: 2rem;
+  text-align: center;
+  width: 90%;
+  max-width: 600px;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.input-group {
+  margin-bottom: 1rem;
+  text-align: left;
+  font-weight: bold;
+}
+
+input[type="file"],
+button {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:disabled {
+  background: #9ca3af;
+}
+
+.error {
+  color: red;
+  margin-top: 1rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+  text-align: center;
+}
