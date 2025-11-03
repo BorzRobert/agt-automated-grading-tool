@@ -1,20 +1,17 @@
-import numpy as np
 import cv2
-from typing import Tuple, List
+import numpy as np
 
-def sort_contours_top_to_bottom(cnts, method="top-to-bottom"):
-    bounding_boxes = [cv2.boundingRect(c) for c in cnts]
-    cnts_bbs = sorted(zip(cnts, bounding_boxes), key=lambda b: (b[1][1], b[1][0]))
-    cnts_sorted, bbs_sorted = zip(*cnts_bbs)
-    return list(cnts_sorted), list(bbs_sorted)
 
-def order_grid_cells(cells_centers: List[Tuple[int,int]], num_cols: int):
-    centers = np.array(cells_centers)
-    idxs = np.argsort(centers[:,1])
-    centers_sorted = centers[idxs]
-    rows = []
-    for i in range(0, len(centers_sorted), num_cols):
-        row = centers_sorted[i:i+num_cols]
-        row = row[np.argsort(row[:,0])]
-        rows.append([tuple(pt) for pt in row])
-    return rows
+def load_image_from_bytes(data: bytes) -> np.ndarray:
+    image_array = np.frombuffer(data, np.uint8)
+    image_array_decoded = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+    if image_array_decoded is None:
+        raise ValueError("Could not decode image")
+    return image_array_decoded
+
+def compute_fill_confidence(region_of_interest_gray: np.ndarray) -> float:
+    """Compute how filled a box is (0..1 scale)."""
+    _, threshold = cv2.threshold(region_of_interest_gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    black = np.count_nonzero(threshold == 0)
+    total = threshold.size
+    return float(black / total) if total > 0 else 0.0

@@ -25,14 +25,14 @@ async def grade_endpoint(
     image_bytes = await image.read()
     config_bytes = await config_json.read()
     try:
-        cfg = load_config_from_json_bytes(config_bytes)
+        configuration_file = load_config_from_json_bytes(config_bytes)
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Invalid config: {e}")
+        raise HTTPException(status_code=400, detail=f"Invalid configuration file: {e}")
     try:
-        result = grader.grade(image_bytes, cfg.correct_answers)
+        result = grader.grade(image_bytes, configuration_file.correct_answers)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Processing error: {e}")
-    return JSONResponse(content=result.dict())
+    return JSONResponse(content=result.model_dump())
 
 if __name__ == "__main__":
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
