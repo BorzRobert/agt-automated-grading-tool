@@ -13,7 +13,7 @@ interface GradeResult {
 }
 
 export const UploadForm: React.FC = () => {
-  const [image, setImage] = useState<File | null>(null);
+  const [list_of_images, setListOfImages] = useState<File[]>([]);
   const [config, setConfig] = useState<File | null>(null);
   const [result, setResult] = useState<GradeResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -21,16 +21,23 @@ export const UploadForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!image || !config) {
-      setError("Please upload both the exam image and configuration JSON.");
+    if (list_of_images.length === 0 || !config) {
+      setError("Please upload both the exam images and configuration JSON.");
       return;
     }
 
     try {
       setLoading(true);
       setError(null);
-      const res = await gradeExam(image, config);
-      setResult(res);
+      const res = await gradeExam(list_of_images, config);
+      //setResult(res);
+      const url = window.URL.createObjectURL(res);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "grades.xlsx";
+      a.click();
+
+      window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error(err);
       setError("Error while grading. Check backend logs.");
@@ -48,7 +55,8 @@ export const UploadForm: React.FC = () => {
           <input
             type="file"
             accept="image/*"
-            onChange={(e) => setImage(e.target.files?.[0] || null)}
+            multiple
+            onChange={(e) => setListOfImages(Array.from(e.target.files || []))}
           />
         </div>
 
