@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import pandas as pd
 from io import BytesIO
-
+from utils import extended_result_info
 app = FastAPI(title="Automated Grading Tool")
 
 app.add_middleware(
@@ -37,7 +37,7 @@ async def grade_endpoint(
         image_bytes = await image.read()
         try:
             result = grader.grade(image_bytes, configuration_file.correct_answers)
-            list_of_results.append({"Candidate": image.filename, "Grade": result.score_percent})
+            list_of_results.append({"Candidate": image.filename, "Grade": result.score_percent, "Extended result": extended_result_info(result)})
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Processing error: {e}")
 

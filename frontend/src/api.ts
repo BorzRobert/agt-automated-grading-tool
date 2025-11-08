@@ -2,10 +2,10 @@ import axios from "axios";
 
 const API_BASE = "http://127.0.0.1:8000";
 
-export async function gradeExam(list_of_images: File[], config: File) {
+export async function gradeExam(listOfImages: File[], config: File) {
   const formData = new FormData();
 
-  list_of_images.forEach((image) =>{
+  listOfImages.forEach((image) =>{
     formData.append("list_of_images", image);
   });
   

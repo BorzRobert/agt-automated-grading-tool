@@ -45,15 +45,4 @@ button:disabled {
   margin-top: 1rem;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-}
 
-th,
-td {
-  border: 1px solid #ddd;
-  padding: 0.5rem;
-  text-align: center;
-}

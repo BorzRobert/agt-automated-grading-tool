@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+import json
+from models import GradeResult
 
 
 def load_image_from_bytes(data: bytes) -> np.ndarray:
@@ -15,3 +17,19 @@ def compute_fill_confidence(region_of_interest_gray: np.ndarray) -> float:
     black = np.count_nonzero(threshold == 0)
     total = threshold.size
     return float(black / total) if total > 0 else 0.0
+
+def extended_result_info(result: GradeResult) -> str:
+    """" return JSON string for Extended result"""
+    extended_result = {
+        "total_questions": result.total_questions,
+        "correct_count": result.correct_count,
+        "score_percent": result.score_percent,
+        "per_question": [
+            {
+                "question": currentQuestion.question,
+                "selected": currentQuestion.selected,
+                "is_correct": currentQuestion.is_correct,
+            } for currentQuestion in result.per_question
+        ]
+    }
+    return json.dumps(extended_result, indent=2)
