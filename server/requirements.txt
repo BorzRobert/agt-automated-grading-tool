@@ -5,3 +5,5 @@ pydantic
 opencv-python
 numpy
 Pillow
+pandas
+openpyxl

@@ -31,7 +31,7 @@ export const UploadForm: React.FC = () => {
       downloadFile(res);
     } catch (err) {
       console.error(err);
-      setError("Error while grading. Check backend logs.");
+      setError("Error while grading. Please try again!");
     } finally {
       setLoading(false);
     }
@@ -39,7 +39,7 @@ export const UploadForm: React.FC = () => {
 
   return (
     <div className="upload-form">
-      <h2 style={{color: "lightgray"}}>Automated Grading Tool</h2>
+      <h2>Automated Grading Tool</h2>
       <form onSubmit={handleSubmit}>
         <div className="input-group">
           <label>Exam Images (.jpg, .png)</label>
