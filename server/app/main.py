@@ -15,7 +15,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-grader = Grader(debug=False)
+grader = Grader(debug=True)
 
 @app.post("/grade/")
 async def grade_endpoint(
