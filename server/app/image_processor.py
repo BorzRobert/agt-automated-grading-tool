@@ -10,7 +10,7 @@ class ImageProcessor:
         self.debug = debug
         self.debug_image = None
 
-    def detect_guided_boxes(self, image: np.ndarray) -> Tuple[List[Tuple[int, int, int, int]], np.ndarray, int, int]:
+    def detect_guided_boxes(self, image_name: str, image: np.ndarray) -> Tuple[List[Tuple[int, int, int, int]], np.ndarray, int, int]:
         """Detect boxes using the guiding lines."""
 
         grayscale_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -90,7 +90,7 @@ class ImageProcessor:
                 cv2.rectangle(debug_visualization_image, top_left, bottom_right, (0, 255, 0), 3)  # red box
 
             self.debug_image = debug_visualization_image
-            self.save_debug_image("debug_results/debug_image.png")
+            self.save_debug_image(f"debug_results/{image_name}")
 
         return boxes, grayscale_image, number_of_questions, number_of_choices
 

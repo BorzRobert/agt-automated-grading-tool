@@ -7,7 +7,7 @@ const downloadFile = (fileBlob: Blob) =>{
       const url = window.URL.createObjectURL(fileBlob);
       const downloadLink = document.createElement("a");
       downloadLink.href = url;
-      downloadLink.download = "Grades.xlsx";
+      downloadLink.download = "grade_results.zip";
       downloadLink.click();
       window.URL.revokeObjectURL(url);
 }
@@ -30,8 +30,7 @@ export const UploadForm: React.FC = () => {
       const res = await gradeExam(listOfImages, config);
       downloadFile(res);
     } catch (err) {
-      console.error(err);
-      setError("Error while grading. Please try again!");
+      setError(`Error encountered while grading! Check backend logs!`);
     } finally {
       setLoading(false);
     }

@@ -11,9 +11,9 @@ class Grader:
         self.image_processor = ImageProcessor(debug=debug)
         self.debug = debug
 
-    def grade(self, image_bytes: bytes, configuration: dict) -> GradeResult:
+    def grade(self, image_name: str, image_bytes: bytes, configuration: dict) -> GradeResult:
         image = load_image_from_bytes(image_bytes)
-        boxes, grayscale_image, number_of__questions, number_of_choices = self.image_processor.detect_guided_boxes(image)
+        boxes, grayscale_image, number_of__questions, number_of_choices = self.image_processor.detect_guided_boxes(image_name, image)
 
         # Group boxes by rows
         tolerance = 10 # vertical tolerance for two boxes to be considered in the same row
