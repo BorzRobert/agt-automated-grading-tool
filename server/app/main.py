@@ -29,6 +29,7 @@ async def grade_endpoint(
         raise HTTPException(status_code=500, detail=f"The uploaded images couldn't be graded! Please try again!")
 
     zip_with_results = service.get_zip_containing_results(list_of_results, "./debug_results")
+    service.clear_files_from_directory("./debug_results")
 
     return zip_with_results
 

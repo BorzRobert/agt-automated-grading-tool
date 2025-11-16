@@ -32,6 +32,19 @@ async def grade_images(list_of_images: List[UploadFile], config_json: UploadFile
 
     return list_of_results
 
+def clear_files_from_directory(folder_path: str):
+    if not os.path.exists(folder_path):
+        print(f"[DEBUG]Error: Directory not found at {folder_path}")
+        return
+
+    for item_name in os.listdir(folder_path):
+        item_path = os.path.join(folder_path, item_name)
+        try:
+            if os.path.isfile(item_path):
+                os.remove(item_path)
+        except Exception as e:
+            print(f"[DEBUG]Failed to delete {item_path}. Reason: {e}")
+
 def get_zip_containing_results(list_of_results: list[dict], debug_results_directory: str):
     df = pd.DataFrame(list_of_results)
     df_sorted_by_grade = df.sort_values(by=["Grade"], ascending=False)
