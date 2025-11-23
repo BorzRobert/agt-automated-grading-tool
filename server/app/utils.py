@@ -1,7 +1,5 @@
 import cv2
 import numpy as np
-import json
-from models import GradeResult
 
 
 def load_image_from_bytes(data: bytes) -> np.ndarray:

@@ -21,7 +21,7 @@ class ImageProcessor:
 
         # Detect the horizontal line separating title area from the area containing the answers
         row_sum = np.sum(binary_image, axis=1)
-        threshold = 0.5 * np.max(row_sum)
+        threshold = 0.4 * np.max(row_sum)
         separator_y = None
         for y, val in enumerate(row_sum):
             if val > threshold:
