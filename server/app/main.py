@@ -1,6 +1,8 @@
 import os
 
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi.responses import StreamingResponse
+from io import BytesIO
 
 from app import service
 import uvicorn
@@ -34,23 +36,58 @@ async def grade_endpoint(
     config_json: UploadFile = File(...),
     fill_threshold: float = Form(0.5),
 ):
+    if not list_of_images:
+        raise HTTPException(status_code=400, detail="Please upload at least one exam image.")
     if not 0.0 <= fill_threshold <= 1.0:
-        raise HTTPException(status_code=400, detail="fill_threshold must be between 0.0 and 1.0")
+        raise HTTPException(status_code=400, detail="Fill threshold must be between 0.0 and 1.0.")
 
-    list_of_results = await service.grade_images(
+    job_id = await service.start_grading_job(
         list_of_images,
         config_json,
         fill_threshold=fill_threshold,
     )
 
-    if not list_of_results:
-        print(f"[DEBUG]The uploaded images couldn't be graded! Please try again!")
-        raise HTTPException(status_code=500, detail=f"The uploaded images couldn't be graded! Please try again!")
+    return {"job_id": job_id}
 
-    zip_with_results = service.get_zip_containing_results(list_of_results, "./debug_results")
-    service.clear_files_from_directory("./debug_results")
 
-    return zip_with_results
+@app.get("/grade/{job_id}/progress")
+async def grade_progress_endpoint(job_id: str):
+    job = service.get_job(job_id)
+    if job is None:
+        raise HTTPException(status_code=404, detail="Grading job not found. It may have expired or the id is invalid.")
+
+    return {
+        "status": job.status,
+        "processed": job.processed,
+        "total": job.total,
+        "error": job.error,
+        "failed_images": job.failed_images,
+    }
+
+
+@app.get("/grade/{job_id}/result")
+async def grade_result_endpoint(job_id: str):
+    job = service.get_job(job_id)
+    if job is None:
+        raise HTTPException(status_code=404, detail="Grading job not found. It may have expired or the id is invalid.")
+
+    if job.status in ("pending", "running"):
+        raise HTTPException(status_code=409, detail="Grading is still in progress. Please wait for it to finish.")
+
+    if job.status == "error":
+        detail = job.error or "The uploaded images couldn't be graded. Please try again."
+        service.delete_job(job_id)
+        raise HTTPException(status_code=500, detail=detail)
+
+    assert job.zip_bytes is not None
+    zip_bytes = job.zip_bytes
+    service.delete_job(job_id)
+
+    return StreamingResponse(
+        BytesIO(zip_bytes),
+        media_type="application/zip",
+        headers={"Content-Disposition": "attachment; filename=grade_results.zip"},
+    )
 
 if __name__ == "__main__":
     uvicorn.run("app.main:app", host="0.0.0.0", port=int(os.environ.get("PORT", 8000)), reload=True)

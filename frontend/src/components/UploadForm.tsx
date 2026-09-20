@@ -1,7 +1,12 @@
 import React, { useState } from "react";
-import { gradeExam } from "../api";
+import {
+  extractErrorMessage,
+  getGradeJobProgress,
+  getGradeJobResult,
+  startGradeJob,
+} from "../api";
 
-
+const POLL_INTERVAL_MS = 1000;
 
 const downloadFile = (fileBlob: Blob) =>{
       const url = window.URL.createObjectURL(fileBlob);
@@ -11,17 +16,23 @@ const downloadFile = (fileBlob: Blob) =>{
       downloadLink.click();
       window.URL.revokeObjectURL(url);
 }
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export const UploadForm: React.FC = () => {
   const [listOfImages, setListOfImages] = useState<File[]>([]);
   const [config, setConfig] = useState<File | null>(null);
   const [fillThreshold, setFillThreshold] = useState(0.5);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState<{ processed: number; total: number } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+
     if (listOfImages.length === 0 || !config) {
-      setError("Please upload both the exam images and configuration JSON.");
+      setError("Please upload both the exam images and the configuration JSON.");
       return;
     }
     if (fillThreshold < 0 || fillThreshold > 1) {
@@ -29,15 +40,38 @@ export const UploadForm: React.FC = () => {
       return;
     }
 
+    setLoading(true);
+    setProgress({ processed: 0, total: listOfImages.length });
+
     try {
-      setLoading(true);
-      setError(null);
-      const res = await gradeExam(listOfImages, config, fillThreshold);
-      downloadFile(res);
-    } catch {
-      setError(`Error encountered while grading! Check backend logs!`);
+      const jobId = await startGradeJob(listOfImages, config, fillThreshold);
+
+      let job = await getGradeJobProgress(jobId);
+      setProgress({ processed: job.processed, total: job.total });
+      while (job.status === "pending" || job.status === "running") {
+        await sleep(POLL_INTERVAL_MS);
+        job = await getGradeJobProgress(jobId);
+        setProgress({ processed: job.processed, total: job.total });
+      }
+
+      if (job.status === "error") {
+        setError(job.error ?? "Grading failed. Please check your images and configuration and try again.");
+        return;
+      }
+
+      const resultBlob = await getGradeJobResult(jobId);
+      downloadFile(resultBlob);
+
+      if (job.failed_images.length > 0) {
+        setError(
+          `${job.failed_images.length} of ${job.total} image(s) could not be graded and were skipped: ${job.failed_images.join(", ")}`,
+        );
+      }
+    } catch (err) {
+      setError(await extractErrorMessage(err));
     } finally {
       setLoading(false);
+      setProgress(null);
     }
   };
 
@@ -81,6 +115,17 @@ export const UploadForm: React.FC = () => {
           {loading ? "Grading..." : "Grade Exam"}
         </button>
       </form>
+
+      {loading && (
+        <div className="progress-indicator" role="status" aria-live="polite">
+          <span className="spinner" aria-hidden="true" />
+          <span>
+            {progress && progress.total > 0
+              ? `Processing images... (${progress.processed} of ${progress.total})`
+              : "Starting up..."}
+          </span>
+        </div>
+      )}
 
       {error && <p className="error">{error}</p>}
     </div>
