@@ -1,3 +1,4 @@
+import os
 import statistics
 
 import cv2
@@ -404,6 +405,9 @@ class ImageProcessor:
     def save_debug_image(self, output_path: str):
         """Save the image showing detected lines and boxes (if debug=True)."""
         if hasattr(self, "debug_image") and self.debug_image is not None:
+            output_dir = os.path.dirname(output_path)
+            if output_dir:
+                os.makedirs(output_dir, exist_ok=True)
             cv2.imwrite(output_path, self.debug_image)
             print(f"[DEBUG] Saved debug visualization to: {output_path}")
         else:

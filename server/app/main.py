@@ -1,21 +1,32 @@
+import os
+
 from fastapi import FastAPI, UploadFile, File, HTTPException
 
 from app import service
-from grader import Grader
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 app = FastAPI(title="Automated Grading Tool")
 
+# Comma-separated list of allowed origins, e.g. "https://user.github.io,https://app.vercel.app"
+_default_origins = "http://127.0.0.1:5173,http://localhost:5173"
+allowed_origins = [
+    origin.strip()
+    for origin in os.environ.get("ALLOWED_ORIGINS", _default_origins).split(",")
+    if origin.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5173", "http://localhost:5173"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-grader = Grader(debug=True)
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
 
 @app.post("/grade/")
 async def grade_endpoint(
@@ -34,4 +45,4 @@ async def grade_endpoint(
     return zip_with_results
 
 if __name__ == "__main__":
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("app.main:app", host="0.0.0.0", port=int(os.environ.get("PORT", 8000)), reload=True)

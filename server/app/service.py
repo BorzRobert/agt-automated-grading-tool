@@ -9,7 +9,9 @@ from fastapi import UploadFile, HTTPException
 from fastapi.responses import StreamingResponse
 
 from app.config_loader import load_config_from_json_bytes
-from app.main import grader
+from app.grader import Grader
+
+grader = Grader(debug=True)
 
 
 async def grade_images(list_of_images: List[UploadFile], config_json: UploadFile):

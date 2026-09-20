@@ -1,11 +1,11 @@
 # Python
-backend/__pycache__/
+server/__pycache__/
 *.py[cod]
 
 # Virtual environments
-backend/.venv/
-backend/env/
-backend/venv/
+server/.venv/
+server/env/
+server/venv/
 
 # Node.js / Frontend
 frontend/node_modules/

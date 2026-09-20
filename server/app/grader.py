@@ -1,8 +1,8 @@
 from typing import List, Dict
 
 from app.utils import load_image_from_bytes, compute_fill_confidence
-from image_processor import ImageProcessor
-from models import BoxResult, GradeResult
+from app.image_processor import ImageProcessor
+from app.models import BoxResult, GradeResult
 
 LETTER_MAP = ["A", "B", "C", "D", "E", "F"]
 
