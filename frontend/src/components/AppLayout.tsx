@@ -17,8 +17,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         </Link>
 
         <nav className="main-nav" aria-label="Main navigation">
-          <NavLink to="/" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
+          <NavLink to="/" end className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
             Upload Form
+          </NavLink>
+          <NavLink to="/template" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
+            Blank Template
           </NavLink>
           <NavLink to="/guide" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
             How to Use

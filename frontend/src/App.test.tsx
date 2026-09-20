@@ -30,4 +30,17 @@ describe('App routing', () => {
 
     expect(screen.getByLabelText(/fill threshold/i)).toHaveValue(0.5);
   });
+
+  it('renders the blank template generator on its own route', () => {
+    render(
+      <MemoryRouter initialEntries={['/template']}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole('heading', { name: /generate a blank template/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /blank template/i })).toHaveClass('active');
+    expect(screen.getByRole('link', { name: /upload form/i })).not.toHaveClass('active');
+    expect(screen.queryByRole('heading', { name: /automated grading tool/i })).not.toBeInTheDocument();
+  });
 });

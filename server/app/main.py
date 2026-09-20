@@ -4,7 +4,7 @@ from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.responses import StreamingResponse
 from io import BytesIO
 
-from app import service
+from app import service, template_generator
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
@@ -29,6 +29,19 @@ app.add_middleware(
 @app.get("/health")
 async def health_check():
     return {"status": "ok"}
+
+@app.get("/templates/{question_count}")
+async def get_template_endpoint(question_count: int, number_of_choices: int = 4, exam_title: str = "Exam Title"):
+    try:
+        zip_bytes = template_generator.build_template_zip_bytes(question_count, number_of_choices, exam_title)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    return StreamingResponse(
+        BytesIO(zip_bytes),
+        media_type="application/zip",
+        headers={"Content-Disposition": f"attachment; filename=template_{question_count}.zip"},
+    )
 
 @app.post("/grade/")
 async def grade_endpoint(

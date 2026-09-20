@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 export const TutorialPage: React.FC = () => {
   return (
@@ -74,8 +75,9 @@ export const TutorialPage: React.FC = () => {
         <section className="tutorial-step">
           <h3>5. Generate or review a template</h3>
           <p>
-            Use the template generator to download a blank answer sheet matching the grading tool’s
-            expected layout. This helps ensure the scanned document matches the detector assumptions.
+            Use the <Link to="/template">blank template page</Link> to download an answer sheet matching
+            the grading tool’s expected layout. This helps ensure the scanned document matches the
+            detector assumptions.
           </p>
         </section>
 

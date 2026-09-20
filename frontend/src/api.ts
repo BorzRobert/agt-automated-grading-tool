@@ -43,6 +43,14 @@ export async function getGradeJobResult(jobId: string): Promise<Blob> {
   return response.data as Blob;
 }
 
+export async function getTemplate(questionCount: number, numberOfChoices = 4): Promise<Blob> {
+  const response = await axios.get(`${API_BASE}/templates/${questionCount}`, {
+    params: { number_of_choices: numberOfChoices },
+    responseType: "blob",
+  });
+  return response.data as Blob;
+}
+
 /** Extracts a user-friendly message from an error thrown by the calls above. */
 export async function extractErrorMessage(err: unknown): Promise<string> {
   if (axios.isAxiosError(err)) {
