@@ -29,7 +29,7 @@ export const UploadForm: React.FC = () => {
       setError(null);
       const res = await gradeExam(listOfImages, config);
       downloadFile(res);
-    } catch (err) {
+    } catch {
       setError(`Error encountered while grading! Check backend logs!`);
     } finally {
       setLoading(false);
