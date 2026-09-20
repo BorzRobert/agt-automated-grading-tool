@@ -14,6 +14,7 @@ const downloadFile = (fileBlob: Blob) =>{
 export const UploadForm: React.FC = () => {
   const [listOfImages, setListOfImages] = useState<File[]>([]);
   const [config, setConfig] = useState<File | null>(null);
+  const [fillThreshold, setFillThreshold] = useState(0.5);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,11 +24,15 @@ export const UploadForm: React.FC = () => {
       setError("Please upload both the exam images and configuration JSON.");
       return;
     }
+    if (fillThreshold < 0 || fillThreshold > 1) {
+      setError("Fill threshold must be between 0 and 1.");
+      return;
+    }
 
     try {
       setLoading(true);
       setError(null);
-      const res = await gradeExam(listOfImages, config);
+      const res = await gradeExam(listOfImages, config, fillThreshold);
       downloadFile(res);
     } catch {
       setError(`Error encountered while grading! Check backend logs!`);
@@ -56,6 +61,19 @@ export const UploadForm: React.FC = () => {
             type="file"
             accept="application/json"
             onChange={(e) => setConfig(e.target.files?.[0] || null)}
+          />
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="fill-threshold">Fill threshold</label>
+          <input
+            id="fill-threshold"
+            type="number"
+            min="0"
+            max="1"
+            step="0.05"
+            value={fillThreshold}
+            onChange={(e) => setFillThreshold(Number(e.target.value))}
           />
         </div>
 

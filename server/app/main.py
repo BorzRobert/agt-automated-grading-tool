@@ -1,6 +1,6 @@
 import os
 
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 
 from app import service
 import uvicorn
@@ -31,9 +31,17 @@ async def health_check():
 @app.post("/grade/")
 async def grade_endpoint(
     list_of_images: List[UploadFile] = File(...),
-    config_json: UploadFile = File(...)
+    config_json: UploadFile = File(...),
+    fill_threshold: float = Form(0.5),
 ):
-    list_of_results = await service.grade_images(list_of_images, config_json)
+    if not 0.0 <= fill_threshold <= 1.0:
+        raise HTTPException(status_code=400, detail="fill_threshold must be between 0.0 and 1.0")
+
+    list_of_results = await service.grade_images(
+        list_of_images,
+        config_json,
+        fill_threshold=fill_threshold,
+    )
 
     if not list_of_results:
         print(f"[DEBUG]The uploaded images couldn't be graded! Please try again!")

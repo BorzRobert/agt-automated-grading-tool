@@ -11,7 +11,13 @@ class Grader:
         self.image_processor = ImageProcessor(debug=debug)
         self.debug = debug
 
-    def grade(self, image_name: str, image_bytes: bytes, configuration: dict) -> GradeResult:
+    def grade(
+        self,
+        image_name: str,
+        image_bytes: bytes,
+        configuration: dict,
+        fill_threshold: float = 0.5,
+    ) -> GradeResult:
         image = load_image_from_bytes(image_bytes)
         boxes, grayscale_image, number_of__questions, number_of_choices = self.image_processor.detect_guided_boxes(image_name, image)
 
@@ -35,8 +41,6 @@ class Grader:
 
         per_question_results = []
         correct_count = 0
-        minimum_confidence = 0.5
-
         for question_index, row in enumerate(question_boxes, start=1):
             letter_confidence: Dict[str, float] = {}
             selected_letters: List[str] = []
@@ -52,7 +56,7 @@ class Grader:
                 region_of_interest_gray = grayscale_image[y0:y1, x0:x1]
                 confidence = compute_fill_confidence(region_of_interest_gray)
                 letter_confidence[letter] = confidence
-                if confidence > minimum_confidence:
+                if confidence > fill_threshold:
                     selected_letters.append(letter)
 
             correct_answer = configuration.get(question_index)

@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -9,10 +9,12 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   return (
     <div className="app-shell">
       <header className="topbar">
-        <div className="brand-wrap">
-          <span className="brand-mark">AGT</span>
-          <span className="brand-text">Automated Grading Tool</span>
-        </div>
+        <Link to="/" className="brand-link" aria-label="Go to the main page">
+          <div className="brand-wrap">
+            <span className="brand-mark">AGT</span>
+            <span className="brand-text">Automated Grading Tool</span>
+          </div>
+        </Link>
 
         <nav className="main-nav" aria-label="Main navigation">
           <NavLink to="/" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>

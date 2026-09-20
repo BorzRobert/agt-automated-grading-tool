@@ -2,7 +2,11 @@ import axios from "axios";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
 
-export async function gradeExam(listOfImages: File[], config: File) {
+export async function gradeExam(
+  listOfImages: File[],
+  config: File,
+  fillThreshold = 0.5,
+) {
   const formData = new FormData();
 
   listOfImages.forEach((image) =>{
@@ -10,6 +14,7 @@ export async function gradeExam(listOfImages: File[], config: File) {
   });
   
   formData.append("config_json", config);
+  formData.append("fill_threshold", String(fillThreshold));
 
   const response = await axios.post(`${API_BASE}/grade/`, formData, {
     headers: { "Content-Type": "multipart/form-data" },

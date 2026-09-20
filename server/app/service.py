@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 import zipfile
@@ -14,7 +15,11 @@ from app.grader import Grader
 grader = Grader(debug=True)
 
 
-async def grade_images(list_of_images: List[UploadFile], config_json: UploadFile):
+async def grade_images(
+    list_of_images: List[UploadFile],
+    config_json: UploadFile,
+    fill_threshold: float = 0.5,
+):
     config_bytes = await config_json.read()
     try:
         configuration_file = load_config_from_json_bytes(config_bytes)
@@ -26,7 +31,13 @@ async def grade_images(list_of_images: List[UploadFile], config_json: UploadFile
     for image in list_of_images:
         image_bytes = await image.read()
         try:
-            result = grader.grade(image.filename, image_bytes, configuration_file.correct_answers)
+            result = await asyncio.to_thread(
+                grader.grade,
+                image.filename,
+                image_bytes,
+                configuration_file.correct_answers,
+                fill_threshold=fill_threshold,
+            )
             list_of_results.append(
                 {"Candidate": image.filename, "Grade": result.score_percent, "Extended result": json.dumps(result.model_dump())})
         except Exception as e:
