@@ -47,7 +47,9 @@ export const TemplateGenerator: React.FC = () => {
 
   return (
     <div className="upload-form">
-      <h2>Generate a Blank Template (experimental)</h2>
+      <h2>
+        Generate a Blank Template <em>(⚠️experimental)</em>
+      </h2>
       <form onSubmit={handleDownload}>
         <div className="input-group">
           <label htmlFor="template-question-count">Number of questions ({MIN_QUESTIONS}-{MAX_QUESTIONS})</label>

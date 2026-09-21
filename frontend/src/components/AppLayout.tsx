@@ -29,7 +29,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         </nav>
       </header>
 
-      <main className="page-shell">{children}</main>
+      <div className="page-scroll">
+        <main className="page-shell">{children}</main>
+      </div>
     </div>
   );
 };
