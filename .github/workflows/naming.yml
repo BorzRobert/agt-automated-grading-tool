@@ -1,0 +1,25 @@
+name: naming
+on:
+  pull_request:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Branch name
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          echo "$HEAD_REF" | grep -Eq '^AGT-[0-9]+-[a-z0-9][a-z0-9-]*$' || { echo "Branch '$HEAD_REF' must match AGT-<id>-<message>"; exit 1; }
+      - name: Commit messages
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          bad=$(git log --no-merges --format=%s "origin/$BASE_REF..HEAD" | grep -Ev '^AGT-[0-9]+ .+' || true)
+          if [ -n "$bad" ]; then
+            echo "Commit messages must match AGT-<id> <message>. Offending:"
+            echo "$bad"
+            exit 1
+          fi

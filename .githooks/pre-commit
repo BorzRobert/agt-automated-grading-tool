@@ -1,0 +1,7 @@
+#!/bin/sh
+b=$(git rev-parse --abbrev-ref HEAD)
+[ "$b" = "main" ] && exit 0
+if ! echo "$b" | grep -Eq '^AGT-[0-9]+-[a-z0-9][a-z0-9-]*$'; then
+  echo "Branch '$b' must match: AGT-<id>-<message>  (e.g. AGT-21-login-page)"
+  exit 1
+fi

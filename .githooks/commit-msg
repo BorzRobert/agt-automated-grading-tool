@@ -1,0 +1,7 @@
+#!/bin/sh
+msg=$(head -n1 "$1")
+case "$msg" in Merge*|Revert*|fixup!*|squash!*) exit 0 ;; esac
+if ! echo "$msg" | grep -Eq '^AGT-[0-9]+ .+'; then
+  echo "Commit message must match: AGT-<id> <message>  (e.g. AGT-21 Added login page)"
+  exit 1
+fi
